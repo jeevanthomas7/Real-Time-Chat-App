@@ -95,7 +95,8 @@ export const useAuthStore = create((set, get) => ({
     const { authUser, socket } = get();
     if (!authUser || (socket && socket.connected)) return;
 
-    const baseURL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://real-time-chat-app-ffzt.onrender.com');
+    const baseURL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://real-time-chat-app-1-vxdf.onrender.com');
+
     const newSocket = io(baseURL, {
       query: {
         userId: authUser._id,
