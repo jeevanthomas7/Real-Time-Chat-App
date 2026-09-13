@@ -79,8 +79,10 @@ const Sidebar = () => {
               <img
                 src={user.profilePic || `https://ui-avatars.com/api/?name=${user.username}&background=3B82F6&color=fff&size=64`}
                 alt={user.username}
+                referrerPolicy="no-referrer"
                 className="w-12 h-12 rounded-full object-cover border border-borders bg-background"
               />
+
               {onlineUsers.includes(user._id) && (
                 <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-success rounded-full ring-2 ring-cards" />
               )}

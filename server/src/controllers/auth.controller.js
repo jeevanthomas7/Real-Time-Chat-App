@@ -117,7 +117,7 @@ export const googleAuth = async (req, res) => {
         user.googleId = googleId;
         isUpdated = true;
       }
-      if (!user.profilePic && profilePic) {
+      if (profilePic && user.profilePic !== profilePic) {
         user.profilePic = profilePic;
         isUpdated = true;
       }

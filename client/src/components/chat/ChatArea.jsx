@@ -97,7 +97,7 @@ const ChatArea = () => {
           <div className="flex justify-start w-full">
             <div className="flex gap-3 max-w-[80%] lg:max-w-[60%] flex-row">
               <div className="flex-shrink-0 mt-auto">
-                <img src={selectedUser.profilePic || `https://ui-avatars.com/api/?name=${selectedUser.username}&background=3B82F6&color=fff&size=64`} alt="Avatar" className="w-8 h-8 rounded-full border border-borders bg-cards" />
+                <img src={selectedUser.profilePic || `https://ui-avatars.com/api/?name=${selectedUser.username}&background=3B82F6&color=fff&size=64`} alt="Avatar" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-borders bg-cards" />
               </div>
               <div className="p-4 rounded-2xl shadow-sm bg-cards border border-borders rounded-bl-none flex items-center gap-1">
                 <span className="w-2 h-2 bg-muted rounded-full animate-bounce [animation-delay:-0.3s]"></span>

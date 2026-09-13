@@ -60,8 +60,10 @@ const ProfilePage = () => {
                   <img
                     src={selectedImg || authUser.profilePic || getAvatarFallback()}
                     alt="Profile"
+                    referrerPolicy="no-referrer"
                     className="w-32 h-32 rounded-full object-cover border-4 border-cards shadow-lg"
                   />
+
                   <label
                     htmlFor="avatar-upload"
                     className={`absolute bottom-0 right-0 bg-primary hover:bg-primary/90 p-2 rounded-full cursor-pointer transition-all shadow-md ${
