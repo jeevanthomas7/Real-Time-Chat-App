@@ -61,9 +61,10 @@ const SignUpPage = () => {
         profilePic: user.photoURL,
       });
     } catch (error) {
-      console.error(error);
-      toast.error('Google Sign-In Failed');
+      console.error('Google Auth Error:', error);
+      toast.error(error.message || 'Google Sign-In Failed');
     }
+
   };
 
   return (
