@@ -98,7 +98,18 @@ export const googleAuth = async (req, res) => {
   try {
     const { email, username, googleId, profilePic } = req.body;
     
-    let user = await User.findOne({ email });
+    if (!email || !googleId) {
+      return res.status(400).json({ message: 'Email and Google ID are required.' });
+    }
+
+    // Ensure username is valid string with minimum length of 3 characters for Mongoose validation
+    let safeUsername = username ? username.trim() : '';
+    if (!safeUsername || safeUsername.length < 3) {
+      const emailPrefix = email.split('@')[0];
+      safeUsername = emailPrefix.length >= 3 ? emailPrefix : `${emailPrefix}_user`;
+    }
+    
+    let user = await User.findOne({ $or: [{ email }, { googleId }] });
     
     if (user) {
       let isUpdated = false;
@@ -115,7 +126,7 @@ export const googleAuth = async (req, res) => {
       }
     } else {
       user = new User({
-        username,
+        username: safeUsername,
         email,
         googleId,
         profilePic: profilePic || '',
@@ -132,10 +143,11 @@ export const googleAuth = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.log('Error in google auth controller', error.message);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.log('Error in google auth controller:', error);
+    res.status(500).json({ message: error.message || 'Internal Server Error' });
   }
 };
+
 
 export const logout = (req, res) => {
   try {

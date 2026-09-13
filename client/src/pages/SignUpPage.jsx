@@ -56,16 +56,16 @@ const SignUpPage = () => {
       
       googleLogin({
         email: user.email,
-        username: user.displayName,
+        username: user.displayName || user.email?.split('@')[0] || 'User',
         googleId: user.uid,
-        profilePic: user.photoURL,
+        profilePic: user.photoURL || '',
       });
     } catch (error) {
       console.error('Google Auth Error:', error);
       toast.error(error.message || 'Google Sign-In Failed');
     }
-
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6 sm:p-12">
