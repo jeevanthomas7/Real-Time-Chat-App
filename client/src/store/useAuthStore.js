@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { axiosInstance } from '../services/axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
+import { useChatStore } from './useChatStore';
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -93,14 +94,20 @@ export const useAuthStore = create((set, get) => ({
 
   connectSocket: () => {
     const { authUser, socket } = get();
-    if (!authUser || (socket && socket.connected)) return;
+    if (!authUser) return;
+    if (socket?.connected) return;
 
-    const baseURL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://real-time-chat-app-1-vxdf.onrender.com');
+    const baseURL = import.meta.env.MODE === 'development'
+      ? 'http://localhost:5000'
+      : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'https://real-time-chat-app-1-vxdf.onrender.com');
 
     const newSocket = io(baseURL, {
       query: {
         userId: authUser._id,
       },
+      reconnection: true,
+      reconnectionAttempts: 15,
+      reconnectionDelay: 1000,
     });
 
     newSocket.connect();
@@ -108,6 +115,11 @@ export const useAuthStore = create((set, get) => ({
 
     newSocket.on('getOnlineUsers', (userIds) => {
       set({ onlineUsers: userIds });
+    });
+
+    newSocket.on('connect', () => {
+      useChatStore.getState().subscribeToMessages();
+      useChatStore.getState().subscribeToTypingEvents();
     });
   },
 

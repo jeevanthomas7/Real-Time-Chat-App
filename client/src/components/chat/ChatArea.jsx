@@ -11,15 +11,12 @@ const ChatArea = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    getMessages(selectedUser._id);
-    subscribeToMessages();
-    subscribeToTypingEvents();
-
-    return () => {
-      unsubscribeFromMessages();
-      unsubscribeFromTypingEvents();
-    };
-  }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages, subscribeToTypingEvents, unsubscribeFromTypingEvents]);
+    if (selectedUser?._id) {
+      getMessages(selectedUser._id);
+      subscribeToMessages();
+      subscribeToTypingEvents();
+    }
+  }, [selectedUser?._id, getMessages, subscribeToMessages, subscribeToTypingEvents]);
 
   useEffect(() => {
     if (messagesEndRef.current && messages) {
@@ -77,11 +74,13 @@ const ChatArea = () => {
                   <div className={`text-[10px] text-muted flex items-center gap-1 ${fromMe ? 'justify-end' : 'justify-start'} px-1`}>
                     {formatTime(message.createdAt)}
                     {fromMe && (
-                      <span className="ml-1">
+                      <span className="ml-1 flex items-center select-none">
                         {message.read ? (
-                          <span className="text-primary font-bold tracking-tighter">✓✓</span>
+                          <span className="text-sky-400 font-bold text-[12px] tracking-[-2px]" title="Read">✓✓</span>
+                        ) : message.delivered ? (
+                          <span className="text-muted/80 font-bold text-[12px] tracking-[-2px]" title="Delivered">✓✓</span>
                         ) : (
-                          <span className="text-muted tracking-tighter">✓</span>
+                          <span className="text-muted/80 font-bold text-[12px]" title="Sent">✓</span>
                         )}
                       </span>
                     )}

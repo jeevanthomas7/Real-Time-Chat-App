@@ -62,17 +62,20 @@ export const sendMessage = async (req, res) => {
       audioUrl = uploadResponse.secure_url;
     }
 
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    const isReceiverOnline = !!receiverSocketId;
+
     const newMessage = new Message({
       senderId,
       receiverId,
       text,
       image: imageUrl,
       audio: audioUrl,
+      delivered: isReceiverOnline,
     });
 
     await newMessage.save();
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       const io = getIO();
       io.to(receiverSocketId).emit('newMessage', newMessage);
@@ -92,7 +95,7 @@ export const markMessagesAsRead = async (req, res) => {
 
     await Message.updateMany(
       { senderId, receiverId: myId, read: false },
-      { $set: { read: true } }
+      { $set: { read: true, delivered: true } }
     );
 
     const senderSocketId = getReceiverSocketId(senderId);

@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import Message from '../models/Message.model.js';
 
 let io;
 const userSocketMap = {}; // { userId: socketId }
@@ -30,14 +31,27 @@ export const initSocket = (server) => {
     },
   });
 
-
-
   io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
     const userId = socket.handshake.query.userId;
     
     if (userId && userId !== 'undefined') {
       userSocketMap[userId] = socket.id;
+
+      // Mark undelivered messages as delivered and notify senders
+      Message.updateMany(
+        { receiverId: userId, delivered: false },
+        { $set: { delivered: true } }
+      ).then(async () => {
+        const pendingMessages = await Message.find({ receiverId: userId, read: false }).select('senderId').lean();
+        const senderIds = [...new Set(pendingMessages.map(m => m.senderId.toString()))];
+        senderIds.forEach(senderId => {
+          const senderSocketId = getReceiverSocketId(senderId);
+          if (senderSocketId) {
+            io.to(senderSocketId).emit('messagesDelivered', { receiverId: userId });
+          }
+        });
+      }).catch(err => console.error('Error updating message delivery status:', err));
     }
 
     // broadcast to all connected clients the list of online users

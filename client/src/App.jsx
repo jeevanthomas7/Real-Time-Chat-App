@@ -21,6 +21,8 @@ function App() {
 
   const hideBottomNav = !authUser || (selectedUser && location.pathname === '/');
 
+  const { subscribeToMessages, subscribeToTypingEvents } = useChatStore();
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -28,13 +30,16 @@ function App() {
   useEffect(() => {
     if (authUser) {
       connectSocket();
+      subscribeToMessages();
+      subscribeToTypingEvents();
     }
-  }, [authUser, connectSocket]);
+  }, [authUser, connectSocket, subscribeToMessages, subscribeToTypingEvents]);
 
   if (isCheckingAuth && !authUser) {
     return (
-      <div className="flex items-center justify-center h-screen bg-background">
+      <div className="flex flex-col items-center justify-center h-screen bg-background gap-3">
         <Loader className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-sm font-medium text-muted animate-pulse">Connecting to Chatify...</p>
       </div>
     );
   }
